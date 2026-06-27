@@ -1,6 +1,9 @@
-import { customProvider, gateway } from "ai";
+import { createGroq } from "@ai-sdk/groq";
+import { customProvider } from "ai";
 import { isTestEnvironment } from "../constants";
 import { titleModel } from "./models";
+
+const groq = createGroq();
 
 export const myProvider = isTestEnvironment
   ? (() => {
@@ -19,12 +22,12 @@ export function getLanguageModel(modelId: string) {
     return myProvider.languageModel(modelId);
   }
 
-  return gateway.languageModel(modelId);
+  return groq(modelId);
 }
 
 export function getTitleModel() {
   if (isTestEnvironment && myProvider) {
     return myProvider.languageModel("title-model");
   }
-  return gateway.languageModel(titleModel.id);
+  return groq(titleModel.id);
 }

@@ -7,9 +7,28 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.vercel.ai"),
-  title: "Next.js Chatbot Template",
-  description: "Next.js chatbot template using the AI SDK.",
+  metadataBase: new URL("https://repo-pilot-xmkp.vercel.app"),
+
+  title: {
+    default: "RepoPilot",
+    template: "%s | RepoPilot",
+  },
+
+  description:
+    "Understand any GitHub repository using AI. Analyze architecture, explain code, generate documentation, and chat with your codebase.",
+
+  applicationName: "RepoPilot",
+
+  keywords: [
+    "GitHub",
+    "AI",
+    "Code Analysis",
+    "Repository",
+    "LLM",
+    "RAG",
+    "Next.js",
+    "Developer Tools",
+  ],
 };
 
 export const viewport = {
