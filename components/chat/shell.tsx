@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useActiveChat } from "@/hooks/use-active-chat";
 import {
   initialArtifactData,
@@ -15,6 +15,7 @@ import { DataStreamHandler } from "./data-stream-handler";
 import { submitEditedMessage } from "./message-editor";
 import { Messages } from "./messages";
 import { MultimodalInput } from "./multimodal-input";
+import { RepoInput, type RepoInfo } from "./repo-input";
 
 export function ChatShell() {
   const {
@@ -42,8 +43,13 @@ export function ChatShell() {
     null
   );
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [repoInfo, setRepoInfo] = useState<RepoInfo | null>(null);
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
   const { setArtifact } = useArtifact();
+
+  const handleRepoLoaded = useCallback((repo: RepoInfo) => {
+    setRepoInfo(repo);
+  }, []);
 
   const stopRef = useRef(stop);
   stopRef.current = stop;
@@ -75,6 +81,7 @@ export function ChatShell() {
           />
 
           <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-background md:rounded-tl-[12px] md:border-t md:border-l md:border-border/40">
+            <RepoInput onRepoLoaded={handleRepoLoaded} />
             <Messages
               addToolApprovalResponse={addToolApprovalResponse}
               chatId={chatId}
