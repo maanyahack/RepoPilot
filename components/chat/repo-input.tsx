@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { RepoSummaryCard } from "./repo-summary-card";
+import { RepoExplorer } from "./repo-explorer";
 import type { GitHubRepoMetadata } from "@/lib/types/github";
 
 
@@ -49,8 +50,10 @@ async function fetchRepoMetadata(
 
 export function RepoInput({
   onRepoLoaded,
+  onRepoCleared,
 }: {
   onRepoLoaded?: (repo: RepoInfo) => void;
+  onRepoCleared?: () => void;
 }) {
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -111,10 +114,27 @@ export function RepoInput({
     setMetadata(null);
     setUrl("");
     setError(null);
-  }, []);
+    onRepoCleared?.();
+  }, [onRepoCleared]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div
+      className={cn(
+        "flex flex-col gap-2",
+        !loadedRepo && "flex-1 items-center justify-center min-h-[60vh]"
+      )}
+    >
+      {!loadedRepo && (
+        <div className="fade-up flex flex-col items-center justify-center text-center mb-6">
+          <h1 className="text-4xl font-bold tracking-tight mb-3 text-foreground">
+            RepoPilot
+          </h1>
+          <p className="text-muted-foreground max-w-[450px] text-sm">
+            Analyze and chat with any GitHub repository. Enter a repository URL
+            below to get started.
+          </p>
+        </div>
+      )}
       <div className="fade-up mx-auto w-full max-w-4xl px-2 pt-3 md:px-4 md:pt-4">
         <div
           className={cn(
@@ -200,8 +220,14 @@ export function RepoInput({
                     <span className="text-sm font-medium text-foreground">
                       Repository Loaded ✅
                     </span>
-                    <span className="truncate font-mono text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1.5 truncate font-mono text-xs text-muted-foreground">
                       {loadedRepo.owner}/{loadedRepo.repo}
+                      {metadata?.language && (
+                        <>
+                          <span className="size-1 rounded-full bg-muted-foreground/30" />
+                          <span>{metadata.language}</span>
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -232,6 +258,15 @@ export function RepoInput({
 
       {/* Repository Summary Card */}
       {metadata && <RepoSummaryCard data={metadata} />}
+
+      {/* Repository Explorer */}
+      {metadata && loadedRepo && (
+        <RepoExplorer
+          defaultBranch={metadata.defaultBranch}
+          owner={loadedRepo.owner}
+          repo={loadedRepo.repo}
+        />
+      )}
     </div>
   );
 }

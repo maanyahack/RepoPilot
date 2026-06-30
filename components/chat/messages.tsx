@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { ArrowDownIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -22,6 +23,8 @@ type MessagesProps = {
   isLoading?: boolean;
   selectedModelId: string;
   onEditMessage?: (message: ChatMessage) => void;
+  header?: ReactNode;
+  isRepoLoaded?: boolean;
 };
 
 function PureMessages({
@@ -37,6 +40,8 @@ function PureMessages({
   isLoading,
   selectedModelId: _selectedModelId,
   onEditMessage,
+  header,
+  isRepoLoaded,
 }: MessagesProps) {
   const {
     containerRef: messagesContainerRef,
@@ -61,7 +66,7 @@ function PureMessages({
 
   return (
     <div className="relative flex-1 bg-background">
-      {messages.length === 0 && !isLoading && (
+      {messages.length === 0 && !isLoading && isRepoLoaded && (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
           <Greeting />
         </div>
@@ -74,6 +79,7 @@ function PureMessages({
         ref={messagesContainerRef}
         style={isArtifactVisible ? { scrollbarWidth: "none" } : undefined}
       >
+        {header}
         <div className="mx-auto flex min-h-full min-w-0 max-w-4xl flex-col gap-5 px-2 py-6 md:gap-7 md:px-4">
           {messages.map((message, index) => (
             <PreviewMessage
