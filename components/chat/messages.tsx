@@ -1,13 +1,12 @@
-import type { ReactNode } from "react";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import { ArrowDownIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { useMessages } from "@/hooks/use-messages";
 import type { Vote } from "@/lib/db/schema";
 import type { ChatMessage } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useDataStream } from "./data-stream-provider";
-import { Greeting } from "./greeting";
 import { PreviewMessage, ThinkingMessage } from "./message";
 
 type MessagesProps = {
@@ -48,6 +47,7 @@ function PureMessages({
     endRef: messagesEndRef,
     isAtBottom,
     scrollToBottom,
+    scrollToTop,
     hasSentMessage,
     reset,
   } = useMessages({
@@ -61,16 +61,18 @@ function PureMessages({
     if (prevChatIdRef.current !== chatId) {
       prevChatIdRef.current = chatId;
       reset();
+      scrollToTop("instant");
     }
-  }, [chatId, reset]);
+  }, [chatId, reset, scrollToTop]);
+
+  useEffect(() => {
+    if (isRepoLoaded && messages.length === 0) {
+      scrollToTop("instant");
+    }
+  }, [isRepoLoaded, messages.length, scrollToTop]);
 
   return (
     <div className="relative flex-1 bg-background">
-      {messages.length === 0 && !isLoading && isRepoLoaded && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-          <Greeting />
-        </div>
-      )}
       <div
         className={cn(
           "absolute inset-0 touch-pan-y overflow-y-auto",

@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import {
   ChevronRightIcon,
+  FileCodeIcon,
+  FileIcon,
+  FileJsonIcon,
+  FileTextIcon,
   FolderIcon,
   FolderOpenIcon,
-  FileIcon,
-  FileTextIcon,
-  FileCodeIcon,
   ImageIcon,
-  FileJsonIcon,
   SettingsIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useCallback, useState } from "react";
 import type { GitHubTreeNode } from "@/lib/types/github";
+import { cn } from "@/lib/utils";
 
 /** Map file extensions to specific icons for richer visual feedback. */
 function getFileIcon(name: string) {
@@ -78,6 +78,7 @@ type RepoTreeNodeProps = {
   depth: number;
   onFileClick?: (node: GitHubTreeNode) => void;
   defaultOpen?: boolean;
+  selectedPath?: string;
 };
 
 export function RepoTreeNode({
@@ -85,6 +86,7 @@ export function RepoTreeNode({
   depth,
   onFileClick,
   defaultOpen = false,
+  selectedPath,
 }: RepoTreeNodeProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -136,6 +138,7 @@ export function RepoTreeNode({
                 key={child.path}
                 node={child}
                 onFileClick={onFileClick}
+                selectedPath={selectedPath}
               />
             ))}
           </div>
@@ -147,21 +150,42 @@ export function RepoTreeNode({
   // File node
   const Icon = getFileIcon(node.name);
 
+  const isSelected = node.path === selectedPath;
+
   return (
     <button
       className={cn(
         "flex w-full items-center gap-1.5 rounded-md px-1.5 py-[5px] text-left text-[13px] transition-colors",
-        "hover:bg-accent/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        isSelected
+          ? "bg-primary/10 text-primary font-medium dark:bg-primary/20 dark:text-primary"
+          : "hover:bg-accent/60 text-foreground/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
       )}
       id={`tree-file-${node.path.replace(/\//g, "-")}`}
       onClick={handleFileClick}
       style={{ paddingLeft: paddingLeft + 18 }}
       type="button"
     >
-      <Icon className="size-4 shrink-0 text-muted-foreground/70" />
-      <span className="truncate text-foreground/80">{node.name}</span>
+      <Icon
+        className={cn(
+          "size-4 shrink-0 transition-colors",
+          isSelected ? "text-primary" : "text-muted-foreground/70"
+        )}
+      />
+      <span
+        className={cn(
+          "truncate transition-colors",
+          isSelected ? "text-primary font-medium" : "text-foreground/80"
+        )}
+      >
+        {node.name}
+      </span>
       {node.size !== undefined && node.size > 0 && (
-        <span className="ml-auto shrink-0 pl-2 text-[11px] tabular-nums text-muted-foreground/50">
+        <span
+          className={cn(
+            "ml-auto shrink-0 pl-2 text-[11px] tabular-nums transition-colors",
+            isSelected ? "text-primary/70" : "text-muted-foreground/50"
+          )}
+        >
           {formatSize(node.size)}
         </span>
       )}
@@ -170,7 +194,11 @@ export function RepoTreeNode({
 }
 
 function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }

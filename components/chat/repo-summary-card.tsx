@@ -1,23 +1,23 @@
 "use client";
 
 import {
-  StarIcon,
-  GitForkIcon,
-  TagIcon,
-  ScaleIcon,
-  GitBranchIcon,
+  ArchiveIcon,
+  CircleDotIcon,
   ClockIcon,
   ExternalLinkIcon,
   EyeIcon,
-  CircleDotIcon,
-  ArchiveIcon,
+  GitBranchIcon,
+  GitForkIcon,
+  ScaleIcon,
+  StarIcon,
+  TagIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import type { GitHubRepoMetadata } from "@/lib/types/github";
+import { cn } from "@/lib/utils";
 
 function formatNumber(num: number): string {
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
-  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}k`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
   return num.toString();
 }
 
@@ -64,7 +64,7 @@ const LANGUAGE_COLORS: Record<string, string> = {
 
 export function RepoSummaryCard({ data }: { data: GitHubRepoMetadata }) {
   const langColor = data.language
-    ? LANGUAGE_COLORS[data.language] ?? "bg-muted-foreground"
+    ? (LANGUAGE_COLORS[data.language] ?? "bg-muted-foreground")
     : null;
 
   return (
@@ -131,9 +131,21 @@ export function RepoSummaryCard({ data }: { data: GitHubRepoMetadata }) {
 
           {/* Stats row */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-border/30 pt-2.5">
-            <StatPill icon={StarIcon} label="Stars" value={formatNumber(data.stars)} />
-            <StatPill icon={GitForkIcon} label="Forks" value={formatNumber(data.forks)} />
-            <StatPill icon={EyeIcon} label="Watchers" value={formatNumber(data.watchers)} />
+            <StatPill
+              icon={StarIcon}
+              label="Stars"
+              value={formatNumber(data.stars)}
+            />
+            <StatPill
+              icon={GitForkIcon}
+              label="Forks"
+              value={formatNumber(data.forks)}
+            />
+            <StatPill
+              icon={EyeIcon}
+              label="Watchers"
+              value={formatNumber(data.watchers)}
+            />
             <StatPill
               icon={CircleDotIcon}
               label="Issues"
@@ -143,7 +155,9 @@ export function RepoSummaryCard({ data }: { data: GitHubRepoMetadata }) {
             {data.language && (
               <div className="flex items-center gap-1.5">
                 <span className={cn("size-2.5 rounded-full", langColor)} />
-                <span className="text-xs text-muted-foreground">{data.language}</span>
+                <span className="text-xs text-muted-foreground">
+                  {data.language}
+                </span>
               </div>
             )}
           </div>
@@ -154,7 +168,10 @@ export function RepoSummaryCard({ data }: { data: GitHubRepoMetadata }) {
               <MetaItem icon={ScaleIcon} text={data.license} />
             )}
             <MetaItem icon={GitBranchIcon} text={data.defaultBranch} />
-            <MetaItem icon={ClockIcon} text={`Updated ${formatDate(data.lastUpdated)}`} />
+            <MetaItem
+              icon={ClockIcon}
+              text={`Updated ${formatDate(data.lastUpdated)}`}
+            />
           </div>
 
           {/* Topics */}
@@ -194,7 +211,9 @@ function StatPill({
   return (
     <div className="flex items-center gap-1.5" title={label}>
       <Icon className="size-3.5 text-muted-foreground/60" />
-      <span className="text-xs font-medium tabular-nums text-foreground/80">{value}</span>
+      <span className="text-xs font-medium tabular-nums text-foreground/80">
+        {value}
+      </span>
     </div>
   );
 }

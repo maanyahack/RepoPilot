@@ -1,23 +1,21 @@
 "use client";
 
 import {
-  GitBranchIcon,
-  CheckCircle2Icon,
   AlertCircleIcon,
+  CheckCircle2Icon,
+  GitBranchIcon,
   LoaderIcon,
 } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { RepoSummaryCard } from "./repo-summary-card";
-import { RepoExplorer } from "./repo-explorer";
 import type { GitHubRepoMetadata } from "@/lib/types/github";
+import { cn } from "@/lib/utils";
+import { RepoAISummaryCard } from "./repo-ai-summary-card";
+import { RepoExplorer } from "./repo-explorer";
+import { RepoSummaryCard } from "./repo-summary-card";
 
-
-function parseGitHubUrl(
-  url: string
-): { owner: string; repo: string } | null {
+function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
   const trimmed = url.trim().replace(/\/+$/, "");
   const match = trimmed.match(
     /^https:\/\/github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)$/
@@ -41,9 +39,7 @@ async function fetchRepoMetadata(
   );
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(
-      body.error ?? `Failed to fetch repository (${res.status})`
-    );
+    throw new Error(body.error ?? `Failed to fetch repository (${res.status})`);
   }
   return res.json();
 }
@@ -175,7 +171,36 @@ export function RepoInput({
             </div>
 
             {/* Input row */}
-            {!loadedRepo ? (
+            {loadedRepo ? (
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <CheckCircle2Icon className="size-4 shrink-0 text-emerald-500" />
+                  <div className="flex min-w-0 flex-col">
+                    <span className="text-sm font-medium text-foreground">
+                      Repository Loaded ✅
+                    </span>
+                    <span className="flex items-center gap-1.5 truncate font-mono text-xs text-muted-foreground">
+                      {loadedRepo.owner}/{loadedRepo.repo}
+                      {metadata?.language && (
+                        <>
+                          <span className="size-1 rounded-full bg-muted-foreground/30" />
+                          <span>{metadata.language}</span>
+                        </>
+                      )}
+                    </span>
+                  </div>
+                </div>
+                <Button
+                  className="h-8 rounded-lg text-xs"
+                  id="change-repo-button"
+                  onClick={handleClear}
+                  size="sm"
+                  variant="outline"
+                >
+                  Change
+                </Button>
+              </div>
+            ) : (
               <div className="flex gap-2">
                 <Input
                   aria-invalid={!!error}
@@ -212,35 +237,6 @@ export function RepoInput({
                   )}
                 </Button>
               </div>
-            ) : (
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <CheckCircle2Icon className="size-4 shrink-0 text-emerald-500" />
-                  <div className="flex min-w-0 flex-col">
-                    <span className="text-sm font-medium text-foreground">
-                      Repository Loaded ✅
-                    </span>
-                    <span className="flex items-center gap-1.5 truncate font-mono text-xs text-muted-foreground">
-                      {loadedRepo.owner}/{loadedRepo.repo}
-                      {metadata?.language && (
-                        <>
-                          <span className="size-1 rounded-full bg-muted-foreground/30" />
-                          <span>{metadata.language}</span>
-                        </>
-                      )}
-                    </span>
-                  </div>
-                </div>
-                <Button
-                  className="h-8 rounded-lg text-xs"
-                  id="change-repo-button"
-                  onClick={handleClear}
-                  size="sm"
-                  variant="outline"
-                >
-                  Change
-                </Button>
-              </div>
             )}
 
             {/* Error message */}
@@ -258,6 +254,15 @@ export function RepoInput({
 
       {/* Repository Summary Card */}
       {metadata && <RepoSummaryCard data={metadata} />}
+
+      {/* AI Repository Summary Card */}
+      {loadedRepo && (
+        <RepoAISummaryCard
+          key={`${loadedRepo.owner}/${loadedRepo.repo}`}
+          owner={loadedRepo.owner}
+          repo={loadedRepo.repo}
+        />
+      )}
 
       {/* Repository Explorer */}
       {metadata && loadedRepo && (

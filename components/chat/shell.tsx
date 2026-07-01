@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useActiveChat } from "@/hooks/use-active-chat";
 import {
   initialArtifactData,
@@ -15,7 +15,7 @@ import { DataStreamHandler } from "./data-stream-handler";
 import { submitEditedMessage } from "./message-editor";
 import { Messages } from "./messages";
 import { MultimodalInput } from "./multimodal-input";
-import { RepoInput, type RepoInfo } from "./repo-input";
+import { type RepoInfo, RepoInput } from "./repo-input";
 
 export function ChatShell() {
   const {
@@ -86,14 +86,14 @@ export function ChatShell() {
               chatId={chatId}
               header={
                 <RepoInput
-                  onRepoLoaded={handleRepoLoaded}
                   onRepoCleared={() => setRepoInfo(null)}
+                  onRepoLoaded={handleRepoLoaded}
                 />
               }
               isArtifactVisible={isArtifactVisible}
-              isRepoLoaded={!!repoInfo}
               isLoading={isLoading}
               isReadonly={isReadonly}
+              isRepoLoaded={!!repoInfo}
               messages={messages}
               onEditMessage={(msg) => {
                 const text = msg.parts
@@ -110,7 +110,7 @@ export function ChatShell() {
               votes={votes}
             />
 
-            <div className="sticky bottom-0 z-1 mx-auto flex w-full max-w-4xl gap-2 border-t-0 bg-background px-2 pb-3 md:px-4 md:pb-4">
+            <div className="sticky bottom-0 z-10 mx-auto flex w-full max-w-4xl gap-2 border-t-0 bg-background px-2 pb-3 md:px-4 md:pb-4">
               {!isReadonly && repoInfo && (
                 <MultimodalInput
                   attachments={attachments}
@@ -173,8 +173,6 @@ export function ChatShell() {
       </div>
 
       <DataStreamHandler />
-
-
     </>
   );
 }

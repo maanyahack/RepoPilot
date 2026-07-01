@@ -29,6 +29,17 @@ export function useScrollToBottom() {
     });
   }, []);
 
+  const scrollToTop = useCallback((behavior: ScrollBehavior = "instant") => {
+    if (!containerRef.current) {
+      return;
+    }
+
+    containerRef.current.scrollTo({
+      top: 0,
+      behavior,
+    });
+  }, []);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) {
@@ -117,6 +128,7 @@ export function useScrollToBottom() {
     endRef,
     isAtBottom,
     scrollToBottom,
+    scrollToTop,
     onViewportEnter,
     onViewportLeave,
     reset,
